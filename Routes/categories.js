@@ -1,14 +1,6 @@
 const express = require("express");
-const mongoose = require("mongoose");
-const Joi = require("joi");
 const router = express.Router();
-
-// Mongoose schema - Categories
-const categorySchema = new mongoose.Schema({
-  name: { type: String, required: true, minlength: 3, maxlength: 40 },
-});
-// Mongodb model
-const Category = new mongoose.model("category", categorySchema);
+const { validateData, Category } = require("../Models/categoriesModel");
 
 // get all categories
 router.get("/", async (req, res) => {
@@ -21,17 +13,11 @@ router.get("/:id", async (req, res) => {
   let { id } = req.params;
   const category = await Category.findById(id);
   if (!category) {
-    res.status(404).status("not found");
+    res.status(400).status("not found");
   }
   res.status(200).send(category);
 });
 
-function validateData(category) {
-  const schema = {
-    name: Joi.string().min(3).required(),
-  };
-  return Joi.validate(category, schema);
-}
 // add category
 router.post("/", async (req, res) => {
   const { error } = validateData(req.body);
@@ -57,7 +43,7 @@ router.put("/:id", async (req, res) => {
     { new: true }
   );
   if (!category) {
-    res.status(404).send("category not found!");
+    res.status(400).send("category not found!");
   }
   res.send(category);
 });
@@ -67,7 +53,7 @@ router.put("/:id", async (req, res) => {
 router.delete("/:id", async (req, res) => {
   let category = await Category.findByIdAndRemove(req.params.id);
   if (!category) {
-    res.status(404).send("category not found!");
+    res.status(400).send("category not found!");
   }
   // let index = categories.indexOf(category);
   // categories.splice(index, 1);

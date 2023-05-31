@@ -2,6 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const app = express();
 const categories = require("./Routes/categories");
+const students = require("./Routes/students");
+const courses = require("./Routes/courses");
 const PORT = 8080 || process.env.PORT;
 
 // MongoDb connection
@@ -16,6 +18,8 @@ mongoose
 
 app.use(express.json());
 app.use("/categories", categories);
+app.use("/courses", courses);
+app.use("/students", students);
 
 app.get("/", (req, res) => {
   res.status(200).send("Home");
