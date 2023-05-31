@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const Joi = require("joi");
 
 let categories = [
   { id: 1, name: "Web development" },
@@ -21,8 +22,18 @@ router.get("/categories/:id", (req, res) => {
   res.status(200).send(category);
 });
 
+function validateData(category) {
+  const schema = {
+    name: Joi.string().min(3).required(),
+  };
+  return Joi.validate(category, schema);
+}
 // add category
 router.post("/categories", (req, res) => {
+  const { error } = validateData(req.body);
+  if (error) {
+    res.status(400).send(error.details[0].message);
+  }
   const category = {
     id: categories.length + 1,
     name: req.body.name,
